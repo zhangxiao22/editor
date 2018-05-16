@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="us">
+
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+    }
+
+    .drag {
+      /* zoom : 1.75;      
+      -moz-transform:scale(1.75);
+      -moz-transform-origin:left top; */
+      /* box-sizing: border-box; */ /* 不能加加了div离最右边会有1px间距*/
+      width: 20%;
+      outline: none;
+      height: 20%;
+      /* display: inline-block; */
+      position: absolute;
+      /* float: left; */
+      /* background: #444; */
+      border: 1px solid #444;
+    }
+
+    .drag textarea {
+      width: 100%;
+      min-height: 100%;
+      border: none;
+      padding: 0;
+      box-sizing: border-box;
+      resize: none;
+      /* overflow: hidden; */
+      outline: none;
+      font-size: 20px;
+      cursor: move;
+    }
+  </style>
+  <link href="css/common.css" rel="stylesheet">
+</head>
+
+<body>
+  <script src="external/jquery/jquery.js"></script>
+  <script>
+    $(function () {
+      $('body').html(`<div class="drag ui-draggable ui-draggable-handle" style="left: 26.5741%; top: 29.5597%; width: 20%; right: 53.2407%; height: 19.9161%; bottom: 49.8952%;">
+                    <div class="text-area" contenteditable="true" data-placeholder="文本" style="cursor: move;">adsfadsf</div>
+                  </div>`);
+      // function generate(ele, html) {
+      //   $(ele).html(html);
+      //   let w = $(ele).width();
+      //   let attribute_x = ['width', 'right', 'left'];
+      //   let attribute_y = ['height', 'top', 'bottom'];
+      //   $('body .drag').each(function () {
+      //     let obj = {};
+      //     attribute_x.forEach(i => {
+      //       obj[i] = parseInt($(this).css(i)) * 100 / 1080 + '%';
+      //     });
+      //     attribute_y.forEach(i => {
+      //       obj[i] = parseInt($(this).css(i)) * 100 / 1080 + '%';
+      //     });
+      //     // console.log(obj);
+      //     $(this).css(obj);
+      //   });
+      // }
+      // generate('body',
+      //   `<div class="drag ui-draggable ui-draggable-handle active ants ui-resizable" style="left: 0px; top: 0px; width: 525px; height: 229px;">
+      //               <textarea style="cursor: move;"></textarea>
+      //             <div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div></div><div class="drag ui-draggable ui-draggable-handle" style="left: 527px; top: 0px; width: 551px; height: 229px;">
+      //               <textarea style="cursor: move;"></textarea>
+      //             </div>`
+      // )
+    });
+  </script>
+</body>
+
+</html>

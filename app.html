@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="us">
+
+<head>
+  <meta charset="utf-8">
+  <title>editor</title>
+  <link href="jquery-ui.css" rel="stylesheet">
+  <!-- <link href="css/reset.css" rel="stylesheet"> -->
+  <style>
+    .container {
+      display: flex;
+      min-height: 100%;
+    }
+
+    .component-area {
+      flex-basis: 80px;
+      background: #ddd;
+      padding: 20px 0;
+    }
+
+    .component-area li {
+      width: 80px;
+      height: 80px;
+      text-align: center;
+      line-height: 80px;
+      cursor: pointer;
+    }
+
+    .component-area li:hover {
+      background: #ccc;
+    }
+
+    .edit-area {
+      flex-grow: 1;
+      background: #fff;
+
+    }
+
+    .custom-editbox {
+      width: 20%;
+      outline: none;
+      position: absolute;
+      border: 1px solid #ccc;
+    }
+
+    .custom-editbox .text-area {
+      width: 100%;
+      height: 100%;
+      border: none;
+      padding: 0;
+      outline: none;
+      font-size: 20px;
+      cursor: move;
+    }
+
+    .custom-editbox .text-area:empty:before {
+      content: attr(data-placeholder);
+      color: #bbb;
+    }
+
+    .canvas {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background: #fff;
+    }
+
+    .tool-area {
+      flex-basis: 300px;
+      background: #ddd;
+    }
+  </style>
+  <link href="css/common.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container">
+    <aside class="component-area">
+      <ul>
+        <li class="new-text">文本</li>
+        <li class="new-image">图片</li>
+        <li class="new-video">视频</li>
+      </ul>
+    </aside>
+    <section class="edit-area">
+      <div class="canvas"></div>
+    </section>
+    <aside class="tool-area">
+      <div class="tool hide">tool</div>
+      <button class="save">save</button>
+    </aside>
+  </div>
+  <script src="external/jquery/jquery.js"></script>
+  <script src="jquery-ui.js"></script>
+  <script src="js/index.js"></script>
+  <script>
+    $(function () {
+      //是否有选中的框
+      let has_active_box = false;
+      $('.new-text').click(function (e) {
+        e.stopPropagation();
+        let box = $('<div>').appendTo('.canvas').editbox({
+          type: 1,
+          
+        });
+      });
+
+      $(document).on('click','.component-area,.edit-area',function (e) {
+        // if (!has_active_box) return;
+        $(':custom-editbox').editbox('blur',e);
+        // $('.active').editBox('blur', e);
+      });
+    });
+  </script>
+</body>
+
+</html>

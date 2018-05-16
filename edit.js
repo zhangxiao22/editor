@@ -1,0 +1,1 @@
+$.widget( "custom.editBox", {} );

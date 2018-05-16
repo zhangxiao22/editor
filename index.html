@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="us">
+<head>
+  <meta charset="utf-8">
+  <title>editor</title>
+  <link href="jquery-ui.css" rel="stylesheet">
+  <!-- <link href="css/reset.css" rel="stylesheet"> -->
+  <style>
+    .container {
+      display: flex;
+      min-height: 100%;
+    }
+    .component-area {
+      flex-basis: 80px;
+      background: #ddd;
+      padding: 20px 0;
+    }
+      .component-area li {
+        width: 80px;
+        height: 80px;
+        /* color: #eee; */
+        text-align: center;
+        line-height: 80px;
+        cursor: pointer;
+      }
+      .component-area li:hover {
+        background: #ccc;
+      }
+    .edit-area {
+      flex-grow: 1;
+      background: #fff;
+      /* padding: 100px; */
+    }
+    .drag {
+      /* box-sizing: border-box; */
+      width: 20%;
+      outline: none;
+      /* min-height: 20%; */
+      /* display: inline-block; */
+      position: absolute;
+      /* float: left; */
+      /* background: #444; */
+      border: 1px solid #ccc;
+    }
+    .drag .text-area {
+      width: 100%;
+      height: 100%;
+      border: none;
+      padding: 0;
+      /* box-sizing: border-box; */
+      /* resize: none; */
+      /* overflow: hidden; */
+      /* border: 1px solid #ccc; */
+      outline: none;
+      font-size: 20px;
+      cursor: move;
+    }
+    .drag .text-area:empty:before {
+      content: attr(data-placeholder);
+      color:#bbb;
+    }
+    /* .drag .text-area:not(:empty),.drag .text-area:not(:empty):focus:before {
+      content:none;
+    } */
+
+    .canvas {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background: #fff;
+    }
+
+    .tool-area {
+      flex-basis: 300px;
+      background: #ddd;
+    }
+  </style>
+  <link href="css/common.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container">
+    <aside class="component-area">
+      <ul>
+        <li class="new-text">文本</li>
+        <li class="new-image">图片</li>
+        <li class="new-video">视频</li>
+      </ul>
+    </aside>
+    <section class="edit-area">
+      <div class="canvas"></div>
+    </section>
+    <aside class="tool-area">
+      <div class="tool hide">tool</div>
+      <button class="save">save</button>
+    </aside>
+  </div>
+  <script src="external/jquery/jquery.js"></script>
+  <script src="jquery-ui.js"></script>
+  <script src="index.js"></script>
+  <script>
+    $(function () {
+      $('.new-text').click(function() {
+        $('.canvas').newBox({
+          type : 'text',
+        });
+      });
+      $('.new-image').click(function() {
+        $('.canvas').newBox();
+      });
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // let is_active = false;
+      // $('.addone').click(function () {
+      //   $('.canvas').append(function () {
+      //     // return `<div class="drag">
+      //     //           <textarea></textarea>
+      //     //         </div>`
+      //     return `<div class="drag">
+      //               <div class="text-area" contenteditable="true" data-placeholder="文本"></div>
+      //             </div>`
+      //   });
+      //   // <div class="text-area" contenteditable="true" style="width:50px;height:50px;border:1px solid red;"></div>
+
+      //   $('.drag').draggable({
+      //     containment: ".canvas",
+      //     snap: '.drag, .canvas',
+      //     // snapMode: 'outer',
+      //     // cancel: 'input, button, select, option',
+      //     cursor: 'move',
+      //     // appendTo: '.canvas',
+      //     // revert: 'invalid',
+      //     // start() {
+      //     //   $('.drag').draggable('option', 'snapTolerance', 0);
+      //     // },
+      //     // drag() {
+      //     //   $('.drag').draggable('option', 'snapTolerance', 20);
+      //     // },
+      //     // stop() {
+      //     //   $('.drag').draggable('option', 'snapTolerance', 0);
+      //     // },
+      //   });
+      // });
+      // $(document).on('click', '.drag', function () {
+      //   if ($(this).hasClass('focus')) return;
+      //   if ($(this).hasClass('ants')) {
+      //     console.log('focus-deep');
+      //     $('.ants').draggable('destroy');
+      //     $(this).addClass('focus').find('.text-area').focus().css('cursor', 'text');
+      //   } else {
+      //     console.log('focus');
+      //     $(this).addClass('active ants');
+      //     $('.ants').resizable({
+      //       containment: '.canvas',
+      //       // cancel: 'input, button, select, option',          
+      //     });
+      //     is_active = true;
+      //     $('.tool').show();
+      //   }
+      // });
+      // $(document).click(function (e) {
+      //   if (!is_active) return;
+      //   // console.log($(e.target).attr('class'));
+      //   if (!$(e.target).hasClass('ants') && !$(e.target).parents('.drag').hasClass('ants')) {
+      //     is_active = false;
+      //     console.log('blur');
+      //     $('.drag').draggable({
+      //       containment: ".canvas",
+      //       snap: '.drag, .canvas',
+      //       // cancel: 'input, button, select, option',
+      //       cursor: 'move',
+      //       // appendTo: '.canvas',
+      //       // revert: 'invalid',
+      //       // stop() {
+      //       //   updateCounterStatus($stop_counter, counts[2]);
+      //       // }
+      //     });
+      //     // if(!$('.ants').hasClass('focus')) {
+      //     $('.ants').resizable('destroy');
+      //     // }
+      //     $('.ants').removeClass('active ants focus').find('.text-area').css('cursor', 'move');;
+      //     $('.tool').hide();
+      //   }
+      // });
+
+      // // $('.canvas').droppable({
+      // //   drop: function (event, ui) {
+      // //     // $(this).html("Dropped!");
+      // //   }
+      // // });
+      // $('.save').click(function () {
+      //   // function generate() {
+      //     // $(ele).html(html);
+      //     let w = $('.canvas').width();
+      //     let h = $('.canvas').height();
+      //     let attribute_x = ['width', 'right', 'left'];
+      //     let attribute_y = ['height', 'top', 'bottom'];
+      //     $('.drag').each(function () {
+      //       let obj = {};
+      //       attribute_x.forEach(i => {
+      //         obj[i] = parseInt($(this).css(i)) * 100 / w + '%';
+      //       });
+      //       attribute_y.forEach(i => {
+      //         obj[i] = parseInt($(this).css(i)) * 100 / h + '%';
+      //       });
+      //       // console.log(obj);
+      //       $(this).css(obj);
+      //     });
+      //   // }
+      //   console.log($('.canvas').html());
+      // });
+    });
+  </script>
+</body>
+
+</html>
