@@ -40,17 +40,28 @@
       width: 20%;
       outline: none;
       position: absolute;
-      border: 1px solid #ccc;
+      border: 2px solid #fff;
+    }
+    .custom-editbox:hover {
+      border: 2px dashed #ddd;
+    }
+    .custom-editbox.active {
+      border: 2px dashed #ddd;
+    }
+    .custom-editbox.focus {
+      border: 2px dashed #00CCFF;
     }
 
     .custom-editbox .text-area {
       width: 100%;
-      height: 100%;
+      /* height: 100%; */
       border: none;
       padding: 0;
       outline: none;
       font-size: 20px;
       cursor: move;
+      /* margin: 5px; */
+      /* box-sizing: border-box; */
     }
 
     .custom-editbox .text-area:empty:before {
@@ -86,7 +97,6 @@
       <div class="canvas"></div>
     </section>
     <aside class="tool-area">
-      <div class="tool hide">tool</div>
       <button class="save">save</button>
     </aside>
   </div>
@@ -103,6 +113,11 @@
           type: 1,
           
         });
+      });
+      $(document).on('click','.custom-editbox',function (e) {
+        // if (!has_active_box) return;
+        $(this).editbox('active',e);
+        // $('.active').editBox('blur', e);
       });
 
       $(document).on('click','.component-area,.edit-area',function (e) {

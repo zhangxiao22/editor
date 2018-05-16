@@ -1,13 +1,17 @@
 $.widget('custom.editbox', {
 	options: {
 		type: null,
-		// className: 'edit-box',
-		status: ''
+		status: '',
+		internal: '',
+		tools: [],
+		attribute: {},
 	},
 	_create() {
 		console.log('create')
-		let internal = this.classify(),
-			className = this.options.className;
+		this._classify();
+		let {
+			internal
+		} = this.options;
 		this.element
 			.addClass('custom-editbox')
 			.html(internal);
@@ -20,56 +24,79 @@ $.widget('custom.editbox', {
 	},
 	_init() {
 		console.log('init');
-		let _this = this;
+		// let _this = this;
 		// this.document.on('click',this.element,function(e) {
 		// 	_this.active(e);
 		// })
-		this._on(this.element, {
-			click: 'active'
-		});
+		// this._on(this.element, {
+		// 	click: 'active'
+		// });
 	},
 	_setOptions(options) {
+		console.log('setopt');
 		this._super(options);
-		// this.refresh();
+		this.refresh();
 		// this._trigger("add_draggable", )
 	},
-	classify() {
-		let internal,
-			type = this.options.type;
+	_classify() {
+		// console.log('re')
+		let type = this.options.type;
 		if (type === 1) {
 			//文本
-			internal = `<div class="text-area" contenteditable="true" data-placeholder="文本"></div>`;
+			this.element.css('padding','5px');
+			this.options.internal = `<div class="text-area" contenteditable="true" data-placeholder="文本"></div>`;
+			this.options.tools = ['font_size_input','color_input'];
+			this.options.attribute = {
+				fontSize: 20,
+			};
+			this._on(this.element.find('.text-area'), {
+				'input': function () {
+					console.log(123)
+				}
+			});
 		} else if (type === 2) {
 			//图片
 		} else if (type === 3) {
 			//视频
 		}
-		return internal;
 	},
 	active(e) {
-		// let _this = this;
-		
 		e.stopPropagation();
 		status = this.options.status;
-		console.log(status);
+		// console.log(status);
+		
 		if (status === 'beginning') {
 			//选中，能缩放
-			this._active(true)._resizeAble(true);
+			this._activeStatus(true)._resizeAble(true)._hideTools()._showTools(this.options.tools);
 			this.options.status = 'active';
 		} else if (status === 'active') {
 			//焦点，能编辑，能缩放，不能拖动
-			this._draggAble(false)._focus(true);
+			this._draggAble(false)._focusStatus(true)._hideTools()._showTools(this.options.tools);
 			this.options.status = 'focus';
 		} else if (status === 'focus') {
 			return;
 		}
-		// });
-		// return this;
 	},
 	_beginStatus() {
 		//能拖拽,不能缩放
 		this._draggAble(true);
 		this.options.status = 'beginning';
+	},
+	_activeStatus(b) {
+		if (b) {
+			this.element.addClass('active');
+		} else {
+			this.element.removeClass('active');
+		}
+		return this;
+	},
+	_focusStatus(b) {
+		if (b) {
+			this.element.addClass('focus').find('.text-area').focus().css('cursor', 'text');
+		} else {
+			this.element.removeClass('active focus').find('.text-area').blur().css('cursor', 'move');
+		}
+		return this;
 	},
 	_draggAble(b) {
 		let _this = this;
@@ -80,17 +107,6 @@ $.widget('custom.editbox', {
 				snap: '.custom-editbox',
 				// 光标
 				cursor: 'move',
-				// start() {
-				// 	// console.log(_this);
-				// 	$(':custom-editbox').editbox("option", "disabled")
-				// },
-				drag() {
-
-				},
-				stop() {
-					// _this._on( this.element, {click: "active"} );
-					
-				}
 			} :
 			'destroy';
 		this.element.draggable(dragOption);
@@ -100,61 +116,66 @@ $.widget('custom.editbox', {
 		let resizeOption = b ? {
 				// 约束区域
 				containment: 'parent',
+				start() {
+					// $(this).resizable('option', 'maxHeight', $(this).height());
+				},
+				resize() {
+					$(this).resizable('option', 'maxHeight', $(this).find('.text-area').height());
+					$(this).resizable('option', 'minHeight', $(this).find('.text-area').height());
+				}
+				// maxHeight: this.options.type === 1 ? this.element.height() : null
 			} :
 			'destroy';
 		this.element.resizable(resizeOption);
 		return this;
 	},
-	_active(b) {
-		if (b) {
-			this.element.addClass('active ants');
-		} else {
-			this.element.removeClass('active ants');
+	_tools() {
+		let _this = this;
+		return {
+			font_size_input() {
+				return $('<input />').val(_this.options.attribute.fontSize).on('input',function() {
+					_this.element.find('.text-area').css('font-size',$(this).val()+'px');
+					_this.element.css('height',_this.element.find('.text-area').height());
+					_this.options.attribute.fontSize = $(this).val();
+				});
+			},
+			color_input() {
+				return null;
+			}
 		}
+	},
+	_showTools(tools) {
+		// let tools = 
+		for(let i of tools) {
+			$('.tool-area').append(this._tools()[i]());
+		}
+
+		// let _this = this;
+		// $('<input>').val(this.options.attribute.fontSize).appendTo('.tool-area').on('input',function() {
+		// 	console.log($(this).val());
+		// 	_this.element.find('.text-area').css('font-size',$(this).val()+'px');
+		// 	_this.element.css('height',_this.element.find('.text-area').height());
+		// 	_this.options.attribute.fontSize = $(this).val();
+		// });
+		// console.log(b);
+		
 		return this;
 	},
-	_focus(b) {
-		if (b) {
-			this.element.addClass('focus').find('.text-area').focus().css('cursor', 'text');
-		} else {
-			this.element.removeClass('active ants focus').find('.text-area').css('cursor', 'move');
-		}
+	_hideTools() {
+		$('.tool-area').empty();
 		return this;
 	},
+
 	blur() {
-		console.log('trigger_blur');
+		// console.log('trigger_blur');
 		let status = this.options.status;
 		if (status !== 'beginning') {
-			console.log('blur');
-			this._draggAble(true)._resizeAble(false)._focus(false);
+			// console.log('blur');
+			this._draggAble(true)._resizeAble(false)._focusStatus(false)._hideTools();
 			this.options.status = 'beginning';
 		}
-		//  if (!is_active) return;
-		// console.log($(e.target).attr('class'));
-		// let $currentElement = $(e.target);
-		// if (!$currentElement.hasClass('active') && !$currentElement.parents('.custom-editbox').hasClass('active')) {
-		//   // is_active = false;
-		//   console.log('blur');
-		//   $('.edit-box').draggable({
-		// 		// 约束在指定元素或区域的边界内拖拽
-		// 		containment: 'parent',
-		// 		// 元素是否对齐到其他元素
-
-		// 		// 光标
-		// 		cursor: 'move',
-		// 	});
-		//   // if(!$('.ants').hasClass('focus')) {
-		//   $('.edit-box').resizable('destroy');
-		//   // }
-		//   $('.edit-box').removeClass('active ants focus').find('.text-area').css('cursor', 'move');;
-		//   // $('.tool').hide();
-		// }
-
 	},
-	
-	whatever() {
-		console.log('what');
-	},
+
 	_destroy() {
 		console.log('destroy');
 		// this.element
