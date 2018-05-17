@@ -1,26 +1,30 @@
 $.widget('custom.editbox', {
 	options: {
+		//box的类型 1：文本、2：图片、3：视频
 		type: null,
+		//box的状态 beginning => active => focus
 		status: '',
+		//box里面的内容
 		internal: '',
-		tools: [],
+		//box的工具
+		// tools: [],
+		//box的一些属性:比如文字大小
 		attribute: {},
 	},
 	_create() {
 		console.log('create')
+		//分类 按type判断
 		this._classify();
+		//生成box
 		let {
 			internal
 		} = this.options;
 		this.element
 			.addClass('custom-editbox')
 			.html(internal);
-		//能缩放
-		// this._resizeAble(true);
-		//选中状态
-		// this._active(true);
+		//初始状态：beginning
 		this._beginStatus();
-		// this._blur();
+
 	},
 	_init() {
 		console.log('init');
@@ -33,27 +37,23 @@ $.widget('custom.editbox', {
 		// });
 	},
 	_setOptions(options) {
-		console.log('setopt');
+		// console.log('setopt');
 		this._super(options);
-		this.refresh();
+		// this.refresh();
 		// this._trigger("add_draggable", )
 	},
 	_classify() {
-		// console.log('re')
+		// console.log(this.options.tools)
 		let type = this.options.type;
 		if (type === 1) {
 			//文本
 			this.element.css('padding', '5px');
-			this.options.internal = `<div class="text-area" contenteditable="true" data-placeholder="文本"></div>`;
-			this.options.tools = ['font_size_input', 'color_input'];
+			this.options.internal = `<div class="text-area" contenteditable="true"></div>`;
+			this.tools = ['font_size_input', 'text_align_left_btn', 'text_align_right_btn', 'text_align_center_btn','text_align_justify_btn','box_link_input','box_clear_btn'];
 			this.options.attribute = {
 				fontSize: 20,
 			};
-			this._on(this.element.find('.text-area'), {
-				'input': function () {
-					console.log(123)
-				}
-			});
+
 		} else if (type === 2) {
 			//图片
 		} else if (type === 3) {
@@ -64,14 +64,14 @@ $.widget('custom.editbox', {
 		e.stopPropagation();
 		status = this.options.status;
 		// console.log(status);
-
 		if (status === 'beginning') {
 			//选中，能缩放
-			this._activeStatus(true)._resizeAble(true)._hideTools()._showTools(this.options.tools);
+			$(':custom-editbox').editbox('blur',e);
+			this._activeStatus(true)._resizeAble(true)._hideTools()._showTools(this.tools);
 			this.options.status = 'active';
 		} else if (status === 'active') {
 			//焦点，能编辑，能缩放，不能拖动
-			this._draggAble(false)._focusStatus(true)._hideTools()._showTools(this.options.tools);
+			this._draggAble(false)._focusStatus(true);
 			this.options.status = 'focus';
 		} else if (status === 'focus') {
 			return;
@@ -92,9 +92,9 @@ $.widget('custom.editbox', {
 	},
 	_focusStatus(b) {
 		if (b) {
-			this.element.addClass('focus').find('.text-area').focus().css('cursor', 'text');
+			this.element.addClass('focus').find('.text-area').focus();
 		} else {
-			this.element.removeClass('active focus').find('.text-area').blur().css('cursor', 'move');
+			this.element.removeClass('active focus').find('.text-area').blur();
 		}
 		return this;
 	},
@@ -118,7 +118,7 @@ $.widget('custom.editbox', {
 		let resizeOption = b ? {
 				// 约束区域
 				containment: 'parent',
-				minWidth: this.options.type === 1 ? this.options.attribute.fontSize : null,				
+				minWidth: this.options.type === 1 ? this.options.attribute.fontSize : null,
 				start() {
 					// $(this).resizable('option', 'maxHeight', $(this).height());
 				},
@@ -127,8 +127,8 @@ $.widget('custom.editbox', {
 					$(this).resizable('option', 'minHeight', $(this).find('.text-area').height());
 				},
 				stop() {
-					//很关键，防止有高度后，再输入或删除文字高度不会变
-					_this.element.css('height','auto');
+					//非常关键，防止有高度后，再输入或删除文字高度不会变
+					_this.element.css('height', 'auto');
 				}
 				// maxHeight: this.options.type === 1 ? this.element.height() : null
 			} :
@@ -138,38 +138,76 @@ $.widget('custom.editbox', {
 	},
 	_tools() {
 		let _this = this;
+		//文字对齐
+		let _font_align_btn = direction => {
+			let class_name = direction === 'left' ? 'fa-align-left' : direction === 'right' ? 'fa-align-right' : direction === 'center' ? 'fa-align-center' : direction === 'justify' ? 'fa-align-justify' : '';
+			return $('<button></button>').append('<i class="fas '+class_name+'"></i>').click(function () {
+				_this.element.find('.text-area').css('text-align', direction);
+				_this.options.attribute.direction = direction; 
+			});
+		}
 		return {
+			//改变文字大小
 			font_size_input() {
-				return $('<input />').val(_this.options.attribute.fontSize).on('input', function () {
+				return $('<input type="text" />').val(_this.options.attribute.fontSize).on('input', function () {
+					//改变文字大小
 					_this.element.find('.text-area').css('font-size', $(this).val() + 'px');
-					_this.element.css('height', _this.element.find('.text-area').height());
+					// _this.element.css('height', _this.element.find('.text-area').height());
+					//改变box文字大小属性
 					_this.options.attribute.fontSize = $(this).val();
 				});
 			},
-			color_input() {
-				return null;
+			//文字左对齐
+			text_align_left_btn() {
+				return _font_align_btn('left');
+			},
+			//文字右对齐
+			text_align_right_btn() {
+				return _font_align_btn('right');
+			},
+			//文字居中
+			text_align_center_btn() {
+				return _font_align_btn('center');
+			},
+			//文字两边对齐
+			text_align_justify_btn() {
+				return _font_align_btn('justify');
+			},
+			// ,'text_align_right_btn','text_align_center_btn'
+
+			//添加超链接
+			box_link_input() {
+				let $button = $('<button>ok</button>');
+				let $input = $('<input type="text" />').val(_this.options.attribute.href);
+				let $div = $('<div></div>').append($input).append($button);
+				$button.click(function() {
+					console.log($input.val());
+					_this.element.attr('data-href',$input.val());
+					_this.options.attribute.href = $input.val();
+				});
+				return $div;
+			},
+			//删除
+			box_clear_btn() {
+				return $('<button></button>').append('<i class="far fa-trash-alt"></i>').click(function () {
+					_this._hideTools();
+					_this.element.remove();
+				});
 			}
 		}
 	},
 	_showTools(tools) {
-		// let tools = 
 		for (let i of tools) {
-			$('.tool-area').append(this._tools()[i]());
+			if (this._tools()[i]) {
+				$('.tools').append(this._tools()[i]());
+			} else {
+				console.warn(`不存在工具：${i}`);
+			}
 		}
-
-		// let _this = this;
-		// $('<input>').val(this.options.attribute.fontSize).appendTo('.tool-area').on('input',function() {
-		// 	console.log($(this).val());
-		// 	_this.element.find('.text-area').css('font-size',$(this).val()+'px');
-		// 	_this.element.css('height',_this.element.find('.text-area').height());
-		// 	_this.options.attribute.fontSize = $(this).val();
-		// });
-		// console.log(b);
-
 		return this;
 	},
 	_hideTools() {
-		$('.tool-area').empty();
+		$('.tools').empty();
 		return this;
 	},
 
@@ -185,8 +223,6 @@ $.widget('custom.editbox', {
 
 	_destroy() {
 		console.log('destroy');
-		// this.element
-		//     .removeClass("progressbar")
-		//     .text("");
+		// this.element.removeClass('');
 	}
 });
