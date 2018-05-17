@@ -192,7 +192,8 @@ $.widget('custom.editbox', {
 				let $input = $('<input type="text" />').val(_this.options.attribute.href);
 				let $div = $('<div></div>').append($input).append($button);
 				$button.click(function () {
-					console.log($input.val());
+					// console.log($input.val());
+					if(!$.trim($input.val())) return;
 					_this.element.attr('data-href', $input.val());
 					_this.options.attribute.href = $input.val();
 				});
