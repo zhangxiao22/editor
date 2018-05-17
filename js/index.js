@@ -9,7 +9,9 @@ $.widget('custom.editbox', {
 		//box的工具
 		// tools: [],
 		//box的一些属性:比如文字大小
-		attribute: {},
+		attribute: {
+
+		},
 	},
 	_create() {
 		console.log('create')
@@ -49,9 +51,10 @@ $.widget('custom.editbox', {
 			//文本
 			this.element.css('padding', '5px');
 			this.options.internal = `<div class="text-area" contenteditable="true"></div>`;
-			this.tools = ['font_size_input', 'text_align_left_btn', 'text_align_right_btn', 'text_align_center_btn','text_align_justify_btn','box_link_input','box_clear_btn'];
+			this.tools = ['font_size_input', 'text_align_left_btn', 'text_align_right_btn', 'text_align_center_btn', 'text_align_justify_btn', 'box_link_input', 'box_clear_btn'];
 			this.options.attribute = {
 				fontSize: 20,
+				direction: 'left',
 			};
 
 		} else if (type === 2) {
@@ -66,7 +69,7 @@ $.widget('custom.editbox', {
 		// console.log(status);
 		if (status === 'beginning') {
 			//选中，能缩放
-			$(':custom-editbox').editbox('blur',e);
+			$(':custom-editbox').editbox('blur', e);
 			this._activeStatus(true)._resizeAble(true)._hideTools()._showTools(this.tools);
 			this.options.status = 'active';
 		} else if (status === 'active') {
@@ -140,11 +143,17 @@ $.widget('custom.editbox', {
 		let _this = this;
 		//文字对齐
 		let _font_align_btn = direction => {
+			console.log(_this.options.attribute.direction);
+
 			let class_name = direction === 'left' ? 'fa-align-left' : direction === 'right' ? 'fa-align-right' : direction === 'center' ? 'fa-align-center' : direction === 'justify' ? 'fa-align-justify' : '';
-			return $('<button></button>').append('<i class="fas '+class_name+'"></i>').click(function () {
-				_this.element.find('.text-area').css('text-align', direction);
-				_this.options.attribute.direction = direction; 
-			});
+			return $('<button class="text-align-btn"></button>')
+				.append('<i class="fas ' + class_name + '"></i>')
+				.addClass(_this.options.attribute.direction === direction ? 'active' : '')
+				.click(function () {
+					$(this).addClass('active').siblings('.text-align-btn').removeClass('active');
+					_this.element.find('.text-area').css('text-align', direction);
+					_this.options.attribute.direction = direction;
+				});
 		}
 		return {
 			//改变文字大小
@@ -173,16 +182,15 @@ $.widget('custom.editbox', {
 			text_align_justify_btn() {
 				return _font_align_btn('justify');
 			},
-			// ,'text_align_right_btn','text_align_center_btn'
 
 			//添加超链接
 			box_link_input() {
 				let $button = $('<button>ok</button>');
 				let $input = $('<input type="text" />').val(_this.options.attribute.href);
 				let $div = $('<div></div>').append($input).append($button);
-				$button.click(function() {
+				$button.click(function () {
 					console.log($input.val());
-					_this.element.attr('data-href',$input.val());
+					_this.element.attr('data-href', $input.val());
 					_this.options.attribute.href = $input.val();
 				});
 				return $div;
@@ -194,6 +202,7 @@ $.widget('custom.editbox', {
 					_this.element.remove();
 				});
 			}
+			//
 		}
 	},
 	_showTools(tools) {
