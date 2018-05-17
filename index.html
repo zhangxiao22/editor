@@ -116,8 +116,6 @@
   <script src="js/index.js"></script>
   <script>
     $(function () {
-      //是否有选中的框
-      let has_active_box = false;
       $('.new-text').click(function (e) {
         e.stopPropagation();
         let box = $('<div>').appendTo('.canvas').editbox({
@@ -128,7 +126,7 @@
         $(this).editbox('active', e);
       });
 
-      $(document).on('click', '.component-area,.edit-area', function (e) {
+      $(document).on('click', '.component-area,.edit-area', function () {
         $(':custom-editbox').editbox('blur');
       });
       $('.save').click(function () {
@@ -144,7 +142,7 @@
             obj[i] = parseInt($(this).css(i)) * 100 / w + '%';
           });
           attribute_y.forEach(i => {
-            console.log($(this).css(i));
+            // console.log($(this).css(i));
             obj[i] = parseInt($(this).css(i)) * 100 / h + '%';
           });
           // console.log(obj);

@@ -143,7 +143,7 @@ $.widget('custom.editbox', {
 		let _this = this;
 		//文字对齐
 		let _font_align_btn = direction => {
-			console.log(_this.options.attribute.direction);
+			// console.log(_this.options.attribute.direction);
 
 			let class_name = direction === 'left' ? 'fa-align-left' : direction === 'right' ? 'fa-align-right' : direction === 'center' ? 'fa-align-center' : direction === 'justify' ? 'fa-align-justify' : '';
 			return $('<button class="text-align-btn"></button>')
@@ -151,7 +151,10 @@ $.widget('custom.editbox', {
 				.addClass(_this.options.attribute.direction === direction ? 'active' : '')
 				.click(function () {
 					$(this).addClass('active').siblings('.text-align-btn').removeClass('active');
-					_this.element.find('.text-area').css('text-align', direction);
+					_this.element.find('.text-area').css({
+						'text-align': direction,
+						'text-align-last': direction === 'justify' ? 'justify' : 'unset'
+					});
 					_this.options.attribute.direction = direction;
 				});
 		}
