@@ -43,9 +43,9 @@ $.widget('custom.editbox', {
 		let type = this.options.type;
 		if (type === 1) {
 			//文本
-			this.element.css('padding','5px');
+			this.element.css('padding', '5px');
 			this.options.internal = `<div class="text-area" contenteditable="true" data-placeholder="文本"></div>`;
-			this.options.tools = ['font_size_input','color_input'];
+			this.options.tools = ['font_size_input', 'color_input'];
 			this.options.attribute = {
 				fontSize: 20,
 			};
@@ -64,7 +64,7 @@ $.widget('custom.editbox', {
 		e.stopPropagation();
 		status = this.options.status;
 		// console.log(status);
-		
+
 		if (status === 'beginning') {
 			//选中，能缩放
 			this._activeStatus(true)._resizeAble(true)._hideTools()._showTools(this.options.tools);
@@ -113,15 +113,22 @@ $.widget('custom.editbox', {
 		return this;
 	},
 	_resizeAble(b) {
+		let _this = this;
+		// this.element.find('.text-area').css('font-size',$(this).val()+'px');		
 		let resizeOption = b ? {
 				// 约束区域
 				containment: 'parent',
+				minWidth: this.options.type === 1 ? this.options.attribute.fontSize : null,				
 				start() {
 					// $(this).resizable('option', 'maxHeight', $(this).height());
 				},
 				resize() {
 					$(this).resizable('option', 'maxHeight', $(this).find('.text-area').height());
 					$(this).resizable('option', 'minHeight', $(this).find('.text-area').height());
+				},
+				stop() {
+					//很关键，防止有高度后，再输入或删除文字高度不会变
+					_this.element.css('height','auto');
 				}
 				// maxHeight: this.options.type === 1 ? this.element.height() : null
 			} :
@@ -133,9 +140,9 @@ $.widget('custom.editbox', {
 		let _this = this;
 		return {
 			font_size_input() {
-				return $('<input />').val(_this.options.attribute.fontSize).on('input',function() {
-					_this.element.find('.text-area').css('font-size',$(this).val()+'px');
-					_this.element.css('height',_this.element.find('.text-area').height());
+				return $('<input />').val(_this.options.attribute.fontSize).on('input', function () {
+					_this.element.find('.text-area').css('font-size', $(this).val() + 'px');
+					_this.element.css('height', _this.element.find('.text-area').height());
 					_this.options.attribute.fontSize = $(this).val();
 				});
 			},
@@ -146,7 +153,7 @@ $.widget('custom.editbox', {
 	},
 	_showTools(tools) {
 		// let tools = 
-		for(let i of tools) {
+		for (let i of tools) {
 			$('.tool-area').append(this._tools()[i]());
 		}
 
@@ -158,7 +165,7 @@ $.widget('custom.editbox', {
 		// 	_this.options.attribute.fontSize = $(this).val();
 		// });
 		// console.log(b);
-		
+
 		return this;
 	},
 	_hideTools() {
