@@ -3,7 +3,7 @@ $.widget('custom.editbox', {
 		//box的类型 1：文本、2：图片、3：视频
 		type: null,
 		//box的状态 beginning => active => focus
-		status: '',
+		status: 'beginning',
 		//box里面的内容
 		internal: '',
 		//box的工具
@@ -22,34 +22,25 @@ $.widget('custom.editbox', {
 			internal
 		} = this.options;
 		this.element
-			.addClass('custom-editbox')
+			.addClass(`custom-editbox ${this.options.className}`)
 			.html(internal);
+	},
+	_init() {
+		console.log('init');
 		//初始状态：beginning
 		this._beginStatus();
 
 	},
-	_init() {
-		console.log('init');
-		// let _this = this;
-		// this.document.on('click',this.element,function(e) {
-		// 	_this.active(e);
-		// })
-		// this._on(this.element, {
-		// 	click: 'active'
-		// });
-	},
 	_setOptions(options) {
-		// console.log('setopt');
+		console.log('setopt!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 		this._super(options);
-		// this.refresh();
-		// this._trigger("add_draggable", )
 	},
 	_classify() {
 		// console.log(this.options.tools)
 		let type = this.options.type;
 		if (type === 1) {
 			//文本
-			this.element.css('padding', '5px');
+			this.element.css('padding', '5px').addClass('editbox-text');
 			this.options.internal = `<div class="text-area" contenteditable="true"></div>`;
 			this.tools = ['font_size_input', 'text_align_left_btn', 'text_align_right_btn', 'text_align_center_btn', 'text_align_justify_btn', 'box_link_input', 'box_clear_btn'];
 			this.options.attribute = {
@@ -58,7 +49,16 @@ $.widget('custom.editbox', {
 			};
 
 		} else if (type === 2) {
-			//图片
+			//图片			
+			this.element.addClass('editbox-img');
+			this.options.internal = `<div class="image-area">
+																<i class="fas fa-image"></i>
+															</div>`;
+			this.tools = ['upload_img_btn', 'box_clear_btn'];
+			this.options.attribute = {
+				// fontSize: 20,
+				// direction: 'left',
+			};
 		} else if (type === 3) {
 			//视频
 		}
@@ -72,7 +72,7 @@ $.widget('custom.editbox', {
 			$(':custom-editbox').editbox('blur', e);
 			this._activeStatus(true)._resizeAble(true)._hideTools()._showTools(this.tools);
 			this.options.status = 'active';
-		} else if (status === 'active') {
+		} else if (status === 'active' && this.options.type === 1) {
 			//焦点，能编辑，能缩放，不能拖动
 			this._draggAble(false)._focusStatus(true);
 			this.options.status = 'focus';
@@ -116,22 +116,30 @@ $.widget('custom.editbox', {
 		return this;
 	},
 	_resizeAble(b) {
-		let _this = this;
+		let _this = this,
+			type = this.options.type;
 		// this.element.find('.text-area').css('font-size',$(this).val()+'px');		
 		let resizeOption = b ? {
 				// 约束区域
 				containment: 'parent',
-				minWidth: this.options.type === 1 ? this.options.attribute.fontSize : null,
+				minWidth: type === 1 ? this.options.attribute.fontSize : null,
 				start() {
 					// $(this).resizable('option', 'maxHeight', $(this).height());
 				},
 				resize() {
-					$(this).resizable('option', 'maxHeight', $(this).find('.text-area').height());
-					$(this).resizable('option', 'minHeight', $(this).find('.text-area').height());
+					if (type === 1) {
+						$(this).resizable('option', 'maxHeight', $(this).find('.text-area').height());
+						$(this).resizable('option', 'minHeight', $(this).find('.text-area').height());
+					} else if (type === 2) {
+
+					}
 				},
 				stop() {
-					//非常关键，防止有高度后，再输入或删除文字高度不会变
-					_this.element.css('height', 'auto');
+					if (type === 1) {
+						//非常关键，防止有高度后，再输入或删除文字高度不会变
+						_this.element.css('height', 'auto');
+					}
+
 				}
 				// maxHeight: this.options.type === 1 ? this.element.height() : null
 			} :
@@ -139,6 +147,7 @@ $.widget('custom.editbox', {
 		this.element.resizable(resizeOption);
 		return this;
 	},
+	//右侧工具
 	_tools() {
 		let _this = this;
 		//文字对齐
@@ -146,7 +155,8 @@ $.widget('custom.editbox', {
 			// console.log(_this.options.attribute.direction);
 
 			let class_name = direction === 'left' ? 'fa-align-left' : direction === 'right' ? 'fa-align-right' : direction === 'center' ? 'fa-align-center' : direction === 'justify' ? 'fa-align-justify' : '';
-			return $('<button class="text-align-btn"></button>')
+			let title_name = direction === 'left' ? '左对齐' : direction === 'right' ? '右对齐' : direction === 'center' ? '居中' : direction === 'justify' ? '两边对齐' : '';
+			return $('<button title="' + title_name + '" class="text-align-btn"></button>')
 				.append('<i class="fas ' + class_name + '"></i>')
 				.addClass(_this.options.attribute.direction === direction ? 'active' : '')
 				.click(function () {
@@ -186,6 +196,28 @@ $.widget('custom.editbox', {
 				return _font_align_btn('justify');
 			},
 
+			//上传图片
+			upload_img_btn() {
+				let $i = $('<i class="fas fa-upload tools-upload-i"></i>');
+				let $input = $('<input title="上传图片" type="file" accept="image/gif,image/jpeg,image/jpg,image/png" class="tools-upload-btn" />');
+				let $div = $('<div class="tools-upload-div"></div>').append($i).append($input);
+				//上传图片
+				$input.change(function () {
+					let f = $(this)[0].files[0];
+					_this.element.find('.image-area').empty().css({
+						'background-image': `url(${GET_LOCAL_IMG(f)})`,
+					})
+					let type = f.name.split('.')[f.name.split('.').length - 1].toLowerCase();
+					if (IS_IMG.includes(type)) {
+						// data.set('file', f);
+					} else {
+						$(this).val('');
+						return alert('上传图片格式不正确');
+					}
+				});
+				return $div;
+			},
+
 			//添加超链接
 			box_link_input() {
 				let $button = $('<button>ok</button>');
@@ -193,7 +225,7 @@ $.widget('custom.editbox', {
 				let $div = $('<div></div>').append($input).append($button);
 				$button.click(function () {
 					// console.log($input.val());
-					if(!$.trim($input.val())) return;
+					if (!$.trim($input.val())) return;
 					_this.element.attr('data-href', $input.val());
 					_this.options.attribute.href = $input.val();
 				});
@@ -232,6 +264,10 @@ $.widget('custom.editbox', {
 			this._draggAble(true)._resizeAble(false)._focusStatus(false)._hideTools();
 			this.options.status = 'beginning';
 		}
+	},
+
+	getOptions() {
+		console.log(this.option());
 	},
 
 	_destroy() {

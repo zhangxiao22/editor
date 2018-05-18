@@ -33,7 +33,6 @@
     .edit-area {
       flex-grow: 1;
       background: #fff;
-
     }
 
     .custom-editbox {
@@ -41,7 +40,10 @@
       outline: none;
       position: absolute;
       border: 2px solid #fff;
+      
     }
+    .editbox-text {height: auto;}
+    .editbox-img {height: 20%;cursor: move;}
 
     .custom-editbox:hover {
       border: 2px dashed #ddd;
@@ -69,10 +71,25 @@
     .custom-editbox.focus .text-area {
       cursor: text;
     }
-    
-    .custom-editbox .text-area:empty:before {
+    .custom-editbox.editbox-text .text-area:empty:before {
       content:'文本';
       color: #bbb;
+    }
+
+    .custom-editbox .image-area {
+      /* color: #888; */
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+    .custom-editbox .image-area .fa-image {
+      color: #ddd;
+      width: 50%;
+      height: 50%;
     }
 
     .canvas {
@@ -113,6 +130,7 @@
   <script src="external/jquery/jquery.js"></script>
   <script src="external/jqueryui/jquery-ui.min.js"></script>
   <script defer src="external/fontawesome/fontawesome-all.js"></script>
+  <script src="js/common.js"></script>
   <script src="js/index.js"></script>
   <script>
     $(function () {
@@ -121,7 +139,16 @@
         let box = $('<div>').appendTo('.canvas').editbox({
           type: 1,
         });
+
+
       });
+      $('.new-image').click(function (e) {
+        e.stopPropagation();
+        let box = $('<div>').appendTo('.canvas').editbox({
+          type: 2,
+        });
+      });
+
       $(document).on('click', '.custom-editbox', function (e) {
         $(this).editbox('active', e);
       });
@@ -130,6 +157,8 @@
         $(':custom-editbox').editbox('blur');
       });
       $('.save').click(function () {
+
+        
         $(':custom-editbox').editbox('blur');
 
         let w = $('.canvas').width();
@@ -137,6 +166,7 @@
         let attribute_x = ['width', 'right', 'left'];
         let attribute_y = ['height', 'top', 'bottom'];
         $('.custom-editbox').each(function () {
+          $(this).editbox('getOptions');
           let obj = {};
           attribute_x.forEach(i => {
             obj[i] = parseInt($(this).css(i)) * 100 / w + '%';
