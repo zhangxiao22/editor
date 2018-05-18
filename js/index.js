@@ -32,7 +32,7 @@ $.widget('custom.editbox', {
 
 	},
 	_setOptions(options) {
-		console.log('setopt!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+		console.log('setopt!!!!!');
 		this._super(options);
 	},
 	_classify() {
