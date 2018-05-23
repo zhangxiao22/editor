@@ -42,7 +42,7 @@
       border: 2px solid #fff;
       
     }
-    .editbox-text {height: auto;}
+    .editbox-text {height: auto;padding: 5px;}
     .editbox-img {height: 20%;cursor: move;}
 
     .custom-editbox:hover {
@@ -131,33 +131,27 @@
   <script src="external/jqueryui/jquery-ui.min.js"></script>
   <script defer src="external/fontawesome/fontawesome-all.js"></script>
   <script src="js/common.js"></script>
-  <script src="js/index.js"></script>
+  <script src="js/editBox.js"></script>
+  <script src="js/textBox.js"></script>
+  <script src="js/imgBox.js"></script>
   <script>
     $(function () {
       $('.new-text').click(function (e) {
         e.stopPropagation();
-        let box = $('<div>').appendTo('.canvas').editbox({
-          type: 1,
-        });
-
-
+        let box = $('<div>').appendTo('.canvas').textbox();
       });
       $('.new-image').click(function (e) {
         e.stopPropagation();
-        let box = $('<div>').appendTo('.canvas').editbox({
-          type: 2,
-        });
+        let box = $('<div>').appendTo('.canvas').imgbox();
       });
-
-      $(document).on('click', '.custom-editbox', function (e) {
-        $(this).editbox('active', e);
-      });
-
+      // $('.new-video').click(function() {
+      //   let box = $('<div>').appendTo('.canvas').textarea();
+      // })
       $(document).on('click', '.component-area,.edit-area', function () {
-        $(':custom-editbox').editbox('blur');
+        $('.editbox-text').textbox('blur');
+        $('.editbox-img').imgbox('blur');
       });
       $('.save').click(function () {
-
         
         $(':custom-editbox').editbox('blur');
 
