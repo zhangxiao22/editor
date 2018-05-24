@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <title>editor</title>
   <link href="external/jqueryui/jquery-ui.css" rel="stylesheet">
+  <link href="css/evol-colorpicker.css" rel="stylesheet" />
   <!-- <link href="css/reset.css" rel="stylesheet"> -->
   <style>
     .container {
@@ -125,24 +126,33 @@
     <aside class="tool-area">
       <div class="tools"></div>
       <button class="save">save</button>
+      <!-- <div class="demoPanel ui-widget ui-widget-content ui-corner-all" style="width:130px"> -->
+        
+        <!-- <input id="cpBoth" value="#b7dde8" /> -->
+        
+      <!-- </div> -->
     </aside>
   </div>
   <script src="external/jquery/jquery.js"></script>
   <script src="external/jqueryui/jquery-ui.min.js"></script>
   <script defer src="external/fontawesome/fontawesome-all.js"></script>
+  <script src="js/evol-colorpicker.js" type="text/javascript"></script>
+
+
   <script src="js/common.js"></script>
   <script src="js/editBox.js"></script>
   <script src="js/textBox.js"></script>
   <script src="js/imgBox.js"></script>
   <script>
     $(function () {
+
       $('.new-text').click(function (e) {
         e.stopPropagation();
-        let box = $('<div>').appendTo('.canvas').textbox();
+        $('<div>').appendTo('.canvas').textbox();
       });
       $('.new-image').click(function (e) {
         e.stopPropagation();
-        let box = $('<div>').appendTo('.canvas').imgbox();
+        $('<div>').appendTo('.canvas').imgbox();
       });
       // $('.new-video').click(function() {
       //   let box = $('<div>').appendTo('.canvas').textarea();
@@ -151,9 +161,11 @@
         $('.editbox-text').textbox('blur');
         $('.editbox-img').imgbox('blur');
       });
+
       $('.save').click(function () {
         
-        $(':custom-editbox').editbox('blur');
+        $('.editbox-text').textbox('blur');
+        $('.editbox-img').imgbox('blur');
 
         let w = $('.canvas').width();
         let h = $('.canvas').height();

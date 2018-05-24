@@ -3,19 +3,19 @@ $.widget('custom.textbox', $.custom.editbox, {
 		private_classname: 'editbox-text',
 		internal: '<div class="text-area" contenteditable="true"></div>',
 		tools: [
-			'font_size_input',
-			'text_align_left_btn',
-			'text_align_right_btn',
-			'text_align_center_btn',
-			'text_align_justify_btn',
+			'text_size_input',
+			'text_align_btn',
+			'text_color_input',
 			'box_link_input',
 			'box_clear_btn'
 		],
 		attribute: {
 			fontSize: 20,
+			fontColor: '#444',
 			direction: 'left',
 		},
 	},
+
 	_focusStatus(b) {
 		if (b) {
 			this.element.addClass('focus').find('.text-area').focus();
@@ -48,7 +48,7 @@ $.widget('custom.textbox', $.custom.editbox, {
 	},
 	_resizeAble(b) {
 		let _this = this;
-			size = this.options.attribute.fontSize;
+		size = this.options.attribute.fontSize;
 		let resizeOption = b ? {
 				// 约束区域
 				containment: 'parent',
@@ -91,33 +91,38 @@ $.widget('custom.textbox', $.custom.editbox, {
 		}
 		return {
 			//改变文字大小
-			font_size_input() {
-				return $('<input type="text" />').val(_this.options.attribute.fontSize).on('input', function () {
-					_this.element.css('min-width',$(this).val() + 'px')
+			text_size_input() {
+				let $div = $('<div>');
+				let $input = $('<input class="tools-input-s" type="text" />').val(_this.options.attribute.fontSize).on('input', function () {
+					let val = $(this).val();
+					if(isNaN(val)) return;
+					_this.element.css('min-width', val + 'px')
 					//改变文字大小
-					_this.element.find('.text-area').css('font-size', $(this).val() + 'px');
+					_this.element.find('.text-area').css('font-size', val + 'px');
 					// _this.element.css('height', _this.element.find('.text-area').height());
 					//改变box文字大小属性
-					_this.options.attribute.fontSize = parseInt($(this).val());
+					_this.options.attribute.fontSize = parseInt(val);
 					//改变缩放设置
 					_this._resizeAble(true);
 				});
+				$div.append('<label>文字大小</label>',$input,'px');
+				return $div;
 			},
-			//文字左对齐
-			text_align_left_btn() {
-				return _font_align_btn('left');
+			//文本对齐方向
+			text_align_btn() {
+				return $('<div>').append(_font_align_btn('left'), _font_align_btn('center'), _font_align_btn('right'), _font_align_btn('justify'));
 			},
-			//文字右对齐
-			text_align_right_btn() {
-				return _font_align_btn('right');
-			},
-			//文字居中
-			text_align_center_btn() {
-				return _font_align_btn('center');
-			},
-			//文字两边对齐
-			text_align_justify_btn() {
-				return _font_align_btn('justify');
+			//文本颜色
+			text_color_input() {
+				let $input = $('<input class="tools-input-m" style="width:100px;" value="' + _this.options.attribute.fontColor + '" />');
+				let $div = $('<div>').append('<label>文本颜色</label>', $input);
+				// $div = $('<div>').append($input);
+				$input.colorpicker().change(function () {
+					_this.element.css('color', $(this).val());
+					_this.options.attribute.fontColor = $(this).val();
+				});
+				return $div;
+
 			},
 		}
 	},

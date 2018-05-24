@@ -1,3 +1,7 @@
+const IS_IMG = ["bmp", "jpg", "jpeg", "gif", "png"];
+const GET_LOCAL_IMG = (window.navigator.userAgent.indexOf("Chrome") >= 1 || window.navigator.userAgent.indexOf("Safari") >= 1) ?
+	window.webkitURL.createObjectURL :
+	window.URL.createObjectURL;
 $.widget('custom.editbox', {
 	options: {
 		public_classname: 'custom-editbox',
@@ -18,7 +22,9 @@ $.widget('custom.editbox', {
 		// console.log('init');
 		//初始状态：beginning
 		this._beginStatus();
-		this._on({'click':'active'})
+		this._on({
+			'click': 'active'
+		});
 	},
 	//改变options时执行
 	_setOptions: function () {
@@ -56,6 +62,7 @@ $.widget('custom.editbox', {
 				snap: '.custom-editbox',
 				// 光标
 				cursor: 'move',
+				// grid: [50, 20],
 			} :
 			'destroy';
 		this.element.draggable(dragOption);
@@ -79,7 +86,7 @@ $.widget('custom.editbox', {
 			//添加超链接
 			box_link_input() {
 				let $button = $('<button>ok</button>');
-				let $input = $('<input type="text" />').val(_this.options.attribute.href);
+				let $input = $('<input class="tools-input-l" type="text" />').val(_this.options.attribute.href);
 				let $div = $('<div></div>').append($input).append($button);
 				$button.click(function () {
 					// console.log($input.val());
@@ -116,7 +123,7 @@ $.widget('custom.editbox', {
 	},
 
 	blur() {
-		console.log('trigger_blur');
+		// console.log('trigger_blur');
 		let status = this.options.status;
 		if (status !== 'beginning') {
 			// console.log('blur');
