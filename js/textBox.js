@@ -7,7 +7,9 @@ $.widget('custom.textbox', $.custom.editbox, {
 			'text_align_btn',
 			'text_color_input',
 			'box_link_input',
-			'box_clear_btn'
+			'box_bg_input',
+			'box_index_module',
+			'box_clear_btn',
 		],
 		attribute: {
 			fontSize: 20,
@@ -31,7 +33,7 @@ $.widget('custom.textbox', $.custom.editbox, {
 		// console.log(status);
 		if (status === 'beginning') {
 			//选中，能缩放
-			$('.editbox-text').textbox('blur');
+			blurAll();
 			this
 				._activeStatus(true)
 				._resizeAble(true)
@@ -73,8 +75,6 @@ $.widget('custom.textbox', $.custom.editbox, {
 		let _this = this;
 		//文字对齐
 		let _font_align_btn = direction => {
-			// console.log(_this.options.attribute.direction);
-
 			let class_name = direction === 'left' ? 'fa-align-left' : direction === 'right' ? 'fa-align-right' : direction === 'center' ? 'fa-align-center' : direction === 'justify' ? 'fa-align-justify' : '';
 			let title_name = direction === 'left' ? '左对齐' : direction === 'right' ? '右对齐' : direction === 'center' ? '居中' : direction === 'justify' ? '两边对齐' : '';
 			return $('<button title="' + title_name + '" class="text-align-btn"></button>')
@@ -92,10 +92,10 @@ $.widget('custom.textbox', $.custom.editbox, {
 		return {
 			//改变文字大小
 			text_size_input() {
-				let $div = $('<div>');
+				let $div = $('<div class="clearfix tool-line">');
 				let $input = $('<input class="tools-input-s" type="text" />').val(_this.options.attribute.fontSize).on('input', function () {
 					let val = $(this).val();
-					if(isNaN(val)) return;
+					if (isNaN(val)) return;
 					_this.element.css('min-width', val + 'px')
 					//改变文字大小
 					_this.element.find('.text-area').css('font-size', val + 'px');
@@ -105,17 +105,17 @@ $.widget('custom.textbox', $.custom.editbox, {
 					//改变缩放设置
 					_this._resizeAble(true);
 				});
-				$div.append('<label>文字大小</label>',$input,'px');
+				$div.append('<label>文字大小</label>', $input, 'px');
 				return $div;
 			},
 			//文本对齐方向
 			text_align_btn() {
-				return $('<div>').append(_font_align_btn('left'), _font_align_btn('center'), _font_align_btn('right'), _font_align_btn('justify'));
+				return $('<div class="clearfix tool-line">').append(_font_align_btn('left'), _font_align_btn('center'), _font_align_btn('right'), _font_align_btn('justify'));
 			},
 			//文本颜色
 			text_color_input() {
 				let $input = $('<input class="tools-input-m" style="width:100px;" value="' + _this.options.attribute.fontColor + '" />');
-				let $div = $('<div>').append('<label>文本颜色</label>', $input);
+				let $div = $('<div class="clearfix tool-line">').append('<label>文本颜色</label>', $input);
 				// $div = $('<div>').append($input);
 				$input.colorpicker().change(function () {
 					_this.element.css('color', $(this).val());

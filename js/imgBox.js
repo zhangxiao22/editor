@@ -5,6 +5,8 @@ $.widget('custom.imgbox', $.custom.editbox, {
 		tools: [
 			'upload_img_btn',
 			'box_link_input',
+			'box_bg_input',
+			'box_index_module',
 			'box_clear_btn',
 		],
 		attribute: {
@@ -18,7 +20,7 @@ $.widget('custom.imgbox', $.custom.editbox, {
 		// console.log(status);
 		if (status === 'beginning') {
 			//选中，能缩放
-			$('.editbox-img').imgbox('blur');
+			blurAll();
 			this
 				._activeStatus(true)
 				._resizeAble(true)

@@ -2,6 +2,11 @@ const IS_IMG = ["bmp", "jpg", "jpeg", "gif", "png"];
 const GET_LOCAL_IMG = (window.navigator.userAgent.indexOf("Chrome") >= 1 || window.navigator.userAgent.indexOf("Safari") >= 1) ?
 	window.webkitURL.createObjectURL :
 	window.URL.createObjectURL;
+
+function blurAll() {
+	$('.editbox-text').textbox('blur');
+	$('.editbox-img').imgbox('blur');
+}
 $.widget('custom.editbox', {
 	options: {
 		public_classname: 'custom-editbox',
@@ -10,18 +15,22 @@ $.widget('custom.editbox', {
 		//box里面的内容
 		internal: '',
 		//box的一些属性:比如文字大小
-		attribute: {},
+		attribute: {
+			bgColor: null,
+			zIndex: 0,
+		},
 	},
 	_create() {
 		// console.log('create')
 		this.element
 			.addClass(`${this.options.public_classname} ${this.options.private_classname}`)
-			.html(this.options.internal);
+			.html(this.options.internal)
 	},
 	_init() {
 		// console.log('init');
 		//初始状态：beginning
-		this._beginStatus();
+		this._beginStatus()
+			._setZIndex(this.options.attribute.zIndex);
 		this._on({
 			'click': 'active'
 		});
@@ -41,6 +50,7 @@ $.widget('custom.editbox', {
 		//能拖拽,不能缩放
 		this._draggAble(true);
 		this.options.status = 'beginning';
+		return this;
 	},
 	_activeStatus(b) {
 		if (b) {
@@ -79,15 +89,50 @@ $.widget('custom.editbox', {
 		this.element.resizable(resizeOption);
 		return this;
 	},
+	_setZIndex(z_index) {
+		this.element.css('z-index', z_index);
+		this.options.attribute.zIndex = z_index;
+		return this;
+	},
 	//右侧工具
 	_pubTools() {
 		let _this = this;
 		return {
+			//调整层次
+			box_index_module() {
+				let $div = $('<div class="clearfix tool-line">'),
+					$minus = $('<button><i class="fas fa-minus"></i></button>').click(function () {
+						let num = parseInt($input.val()) === 0 ? 0 : parseInt($input.val()) - 1;
+						$input.val(num);
+						_this._setZIndex(num);
+					}),
+					$plus = $('<button><i class="fas fa-plus"></i></button>').click(function () {
+						let num = parseInt($input.val()) + 1;
+						$input.val(num);
+						_this._setZIndex(num);
+					}),
+					$input = $(`<input type="number" value="${_this.options.attribute.zIndex}" />`).on('input',function() {
+						_this._setZIndex($(this).val());
+					});
+				$div.append($minus, $input, $plus);
+				return $div;
+			},
+			//背景色
+			box_bg_input() {
+				let $input = $('<input class="tools-input-m" style="width:100px;" value="' + (_this.options.attribute.bgColor || '') + '" />');
+				let $div = $('<div class="clearfix tool-line">').append('<label>背景颜色</label>', $input);
+				// $div = $('<div>').append($input);
+				$input.colorpicker().change(function () {
+					_this.element.css('background-color', $(this).val() || 'transparent');
+					_this.options.attribute.bgColor = $(this).val();
+				});
+				return $div;
+			},
 			//添加超链接
 			box_link_input() {
 				let $button = $('<button>ok</button>');
 				let $input = $('<input class="tools-input-l" type="text" />').val(_this.options.attribute.href);
-				let $div = $('<div></div>').append($input).append($button);
+				let $div = $('<div class="clearfix tool-line">').append($input).append($button);
 				$button.click(function () {
 					// console.log($input.val());
 					if (!$.trim($input.val())) return;
@@ -131,6 +176,7 @@ $.widget('custom.editbox', {
 			this.options.status = 'beginning';
 		}
 	},
+
 
 	getOptions() {
 		console.log(this.option());
