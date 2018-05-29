@@ -111,7 +111,7 @@ $.widget('custom.editbox', {
 						$input.val(num);
 						_this._setZIndex(num);
 					}),
-					$input = $(`<input type="number" value="${_this.options.attribute.zIndex}" />`).on('input',function() {
+					$input = $(`<input class="tools-input-s" type="number" value="${_this.options.attribute.zIndex}" />`).on('input',function() {
 						_this._setZIndex($(this).val());
 					});
 				$div.append($minus, $input, $plus);
@@ -127,6 +127,10 @@ $.widget('custom.editbox', {
 					_this.options.attribute.bgColor = $(this).val();
 				});
 				return $div;
+			},
+			//尺寸
+			box_size_btn() {
+				//todo
 			},
 			//添加超链接
 			box_link_input() {

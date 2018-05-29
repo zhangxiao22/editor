@@ -74,14 +74,26 @@ $.widget('custom.textbox', $.custom.editbox, {
 	_tools() {
 		let _this = this;
 		//文字对齐
-		let _font_align_btn = direction => {
-			let class_name = direction === 'left' ? 'fa-align-left' : direction === 'right' ? 'fa-align-right' : direction === 'center' ? 'fa-align-center' : direction === 'justify' ? 'fa-align-justify' : '';
-			let title_name = direction === 'left' ? '左对齐' : direction === 'right' ? '右对齐' : direction === 'center' ? '居中' : direction === 'justify' ? '两边对齐' : '';
-			return $('<button title="' + title_name + '" class="text-align-btn"></button>')
+		let _text_align_fn = direction => {
+			let class_name, title_name;
+			if (direction === 'left') {
+				class_name = 'fa-align-left';
+				title_name = '左对齐';
+			} else if (direction === 'right') {
+				class_name = 'fa-align-right';
+				title_name = '右对齐';
+			} else if (direction === 'center') {
+				class_name = 'fa-align-center';
+				title_name = '居中';
+			} else if (direction === 'justify') {
+				class_name = 'fa-align-justify';
+				title_name = '两边对齐';
+			}
+			return $('<button title="' + title_name + '"></button>')
 				.append('<i class="fas ' + class_name + '"></i>')
 				.addClass(_this.options.attribute.direction === direction ? 'active' : '')
 				.click(function () {
-					$(this).addClass('active').siblings('.text-align-btn').removeClass('active');
+					$(this).addClass('active').siblings('button').removeClass('active');
 					_this.element.find('.text-area').css({
 						'text-align': direction,
 						'text-align-last': direction === 'justify' ? 'justify' : 'unset'
@@ -110,7 +122,7 @@ $.widget('custom.textbox', $.custom.editbox, {
 			},
 			//文本对齐方向
 			text_align_btn() {
-				return $('<div class="clearfix tool-line">').append(_font_align_btn('left'), _font_align_btn('center'), _font_align_btn('right'), _font_align_btn('justify'));
+				return $('<div class="clearfix tool-line button-group">').append(_text_align_fn('left'), _text_align_fn('center'), _text_align_fn('right'), _text_align_fn('justify'));
 			},
 			//文本颜色
 			text_color_input() {

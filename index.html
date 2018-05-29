@@ -9,12 +9,16 @@
   <!-- <link href="css/reset.css" rel="stylesheet"> -->
   <style>
     .container {
-      display: flex;
+      /* display: flex; */
       min-height: 100%;
     }
 
     .component-area {
-      flex-basis: 80px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      /* flex-basis: 80px; */
       background: #FFCC99;
       color:#984209;
       padding: 20px 0;
@@ -34,8 +38,14 @@
     }
 
     .edit-area {
-      flex-grow: 1;
+      position: absolute;
+      left: 80px;
+      right: 300px;
+      top: 0;
+      bottom: 0;
+      /* flex-grow: 1; */
       background: #fff;
+      overflow: auto;
     }
 
     .custom-editbox {
@@ -88,7 +98,7 @@
       align-items: center;
       justify-content: center;
       background-repeat: no-repeat;
-      background-size: cover;
+      /* background-size: cover; */
     }
     .custom-editbox .image-area .fa-image {
       color: #ddd;
@@ -105,7 +115,12 @@
     }
 
     .tool-area {
-      flex-basis: 300px;
+      /* flex-basis: 300px; */
+      width: 300px;
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
       background: #FFCC99;
     }
     button.active {
