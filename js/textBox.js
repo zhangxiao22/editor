@@ -8,16 +8,19 @@ $.widget('custom.textbox', $.custom.editbox, {
 			'text_color_input',
 			'box_link_input',
 			'box_bg_input',
+			'box_size_btn',
 			'box_index_module',
 			'box_clear_btn',
 		],
 		attribute: {
 			fontSize: 20,
+			width: 300,
+			height : 20,
 			fontColor: '#444',
 			direction: 'left',
 		},
 	},
-
+	
 	_focusStatus(b) {
 		if (b) {
 			this.element.addClass('focus').find('.text-area').focus();
@@ -69,6 +72,11 @@ $.widget('custom.textbox', $.custom.editbox, {
 			} :
 			'destroy';
 		this.element.resizable(resizeOption);
+		return this;
+	},
+	_setHeight(height) {
+		this.element.css('height', 'auto');
+		this.options.attribute.height = height;
 		return this;
 	},
 	_tools() {

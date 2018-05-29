@@ -14,8 +14,10 @@ $.widget('custom.editbox', {
 		status: 'beginning',
 		//box里面的内容
 		internal: '',
-		//box的一些属性:比如文字大小
+		//box的一些属性
 		attribute: {
+			width: null,
+			height: null,
 			bgColor: null,
 			zIndex: 0,
 		},
@@ -30,6 +32,8 @@ $.widget('custom.editbox', {
 		// console.log('init');
 		//初始状态：beginning
 		this._beginStatus()
+			._setWidth(this.options.attribute.width)
+			._setHeight(this.options.attribute.height)
 			._setZIndex(this.options.attribute.zIndex);
 		this._on({
 			'click': 'active'
@@ -89,6 +93,16 @@ $.widget('custom.editbox', {
 		this.element.resizable(resizeOption);
 		return this;
 	},
+	_setWidth(width) {
+		this.element.css('width', width);
+		this.options.attribute.width = width;
+		return this;
+	},
+	_setHeight(height) {
+		this.element.css('height', height);
+		this.options.attribute.height = height;
+		return this;
+	},
 	_setZIndex(z_index) {
 		this.element.css('z-index', z_index);
 		this.options.attribute.zIndex = z_index;
@@ -96,6 +110,7 @@ $.widget('custom.editbox', {
 	},
 	//右侧工具
 	_pubTools() {
+		// console.log(this.options.attribute)
 		let _this = this;
 		return {
 			//调整层次
@@ -111,7 +126,7 @@ $.widget('custom.editbox', {
 						$input.val(num);
 						_this._setZIndex(num);
 					}),
-					$input = $(`<input class="tools-input-s" type="number" value="${_this.options.attribute.zIndex}" />`).on('input',function() {
+					$input = $(`<input class="tools-input-s" type="number" value="${_this.options.attribute.zIndex}" />`).on('input', function () {
 						_this._setZIndex($(this).val());
 					});
 				$div.append($minus, $input, $plus);
@@ -130,7 +145,20 @@ $.widget('custom.editbox', {
 			},
 			//尺寸
 			box_size_btn() {
-				//todo
+				let $div = $('<div>'),
+					$x_input = $(`<input class="tools-input-s" type="number" value="${_this.options.attribute.width}" />`).on('input', function () {
+						_this._setWidth($(this).val());
+					}),
+					$y_input = $(`<input class="tools-input-s" type="number" ${_this.options.private_classname === 'editbox-text'?'disabled':''} value="${_this.options.attribute.height}" />`)
+					.on('input', function () {
+						// console.log(_this);
+						// if() {
+
+						// }
+						_this._setHeight($(this).val());
+					});
+				$div.append('width:', $x_input, 'height:', $y_input);
+				return $div;
 			},
 			//添加超链接
 			box_link_input() {

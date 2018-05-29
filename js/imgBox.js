@@ -9,6 +9,7 @@ $.widget('custom.imgbox', $.custom.editbox, {
 			'img_position_y_btn',
 			'box_link_input',
 			'box_bg_input',
+			'box_size_btn',
 			'box_index_module',
 			'box_clear_btn',
 		],
