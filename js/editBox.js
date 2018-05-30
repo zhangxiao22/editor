@@ -7,6 +7,21 @@ function blurAll() {
 	$('.editbox-text').textbox('blur');
 	$('.editbox-img').imgbox('blur');
 }
+$.fn.extend({
+	delayInput(callback, time = 500) {
+		let t;
+		this.on('keyup', function () {
+			clearTimeout(t);
+			t = setTimeout(_ => {
+				callback.call(this);
+			}, time);
+		});
+		this.on('focus', function () {
+			this.select();
+		});
+		return this;
+	},
+});
 $.widget('custom.editbox', {
 	options: {
 		public_classname: 'custom-editbox',
@@ -34,7 +49,8 @@ $.widget('custom.editbox', {
 		this._beginStatus()
 			._setWidth(this.options.attribute.width)
 			._setHeight(this.options.attribute.height)
-			._setZIndex(this.options.attribute.zIndex);
+			._setZIndex(this.options.attribute.zIndex)
+			._methods();
 		this._on({
 			'click': 'active'
 		});
@@ -88,17 +104,28 @@ $.widget('custom.editbox', {
 		let resizeOption = b ? {
 				// 约束区域
 				containment: 'parent',
+				resize() {
+					_this.options.attribute.width = _this.element.width();
+					_this.options.attribute.height = _this.element.height();
+					$('.box-width-input').val(_this.element.width());
+					$('.box-height-input').val(_this.element.height());
+				}
 			} :
 			'destroy';
 		this.element.resizable(resizeOption);
 		return this;
 	},
 	_setWidth(width) {
+		// let minWidth = this.options.attribute.minWidth,
+		// 	width = parseInt(w);
+		// width = width < minWidth ? minWidth : width;
 		this.element.css('width', width);
 		this.options.attribute.width = width;
 		return this;
 	},
 	_setHeight(height) {
+		// let minHeight = this.options.attribute.minWidth;
+		// height = width < minHeight ? minHeight : height;
 		this.element.css('height', height);
 		this.options.attribute.height = height;
 		return this;
@@ -146,19 +173,47 @@ $.widget('custom.editbox', {
 			//尺寸
 			box_size_btn() {
 				let $div = $('<div>'),
-					$x_input = $(`<input class="tools-input-s" type="number" value="${_this.options.attribute.width}" />`).on('input', function () {
-						_this._setWidth($(this).val());
+					$x_input = $(`<input class="tools-input-s box-width-input" type="number" value="${_this.options.attribute.width}" />`).delayInput(function () {
+						let $this = $(this),
+							currentVal = parseInt($this.val()) || 0,
+							val,
+							left = parseInt(_this.element.css('left')),
+							minWidth = _this.options.attribute.minWidth,
+							maxWidth = $('.canvas').width(),
+							padding = _this.options.attribute.padding;
+						if (currentVal < minWidth) {
+							val = minWidth;
+							$this.val(val).select();
+						} else if (currentVal > maxWidth) {
+							val = maxWidth - padding * 2;
+							$this.val(val).select();
+							_this.element.css('left', 0);
+						} else {
+							val = currentVal;
+							if ((left + val + padding * 2) > maxWidth) {
+								_this.element.css({
+									// 'right': 0,
+									'left': maxWidth - val - padding * 2
+								});
+							}
+						}
+						_this._setWidth($this.val());
 					}),
-					$y_input = $(`<input class="tools-input-s" type="number" ${_this.options.private_classname === 'editbox-text'?'disabled':''} value="${_this.options.attribute.height}" />`)
-					.on('input', function () {
-						// console.log(_this);
-						// if() {
-
-						// }
+					$y_input = $(`<input class="tools-input-s box-height-input" type="number"bn ${_this.options.private_classname === 'editbox-text'?'disabled':''} value="${_this.options.attribute.height}" />`)
+					.delayInput(function () {
 						_this._setHeight($(this).val());
 					});
-				$div.append('width:', $x_input, 'height:', $y_input);
+				$div.append('宽:', $x_input, '高:', $y_input);
 				return $div;
+			},
+			//box居中
+			box_center_btn() {
+				return $('<button>center</button>').click(function () {
+					let maxWidth = $('.canvas').width(),
+						width = _this.element.width(),
+						padding = _this.options.attribute.padding;
+					_this.element.css('left', (maxWidth - width - padding * 2) / 2);
+				});
 			},
 			//添加超链接
 			box_link_input() {

@@ -9,24 +9,31 @@ $.widget('custom.textbox', $.custom.editbox, {
 			'box_link_input',
 			'box_bg_input',
 			'box_size_btn',
+			'box_center_btn',
 			'box_index_module',
 			'box_clear_btn',
 		],
 		attribute: {
+			padding:5,
 			fontSize: 20,
 			width: 300,
-			height : 20,
+			height: 20,
 			fontColor: '#444',
 			direction: 'left',
+			minWidth : 20,
 		},
 	},
-	
+
 	_focusStatus(b) {
 		if (b) {
 			this.element.addClass('focus').find('.text-area').focus();
 		} else {
 			this.element.removeClass('focus').find('.text-area').blur();
 		}
+		return this;
+	},
+	_methods() {
+		this._input();
 		return this;
 	},
 	active(e) {
@@ -61,10 +68,10 @@ $.widget('custom.textbox', $.custom.editbox, {
 				maxHeight: size,
 				minHeight: size,
 				resize() {
-					// $(this).resizable('option', 'maxHeight', size);
-					// $(this).resizable('option', 'minHeight', size);
 					//非常关键，防止有高度后，再输入或删除文字高度不会变
 					_this.element.css('height', 'auto');
+					_this.options.attribute.width = _this.element.width();
+					$('.box-width-input').val(_this.element.width());
 				},
 				stop() {
 					// _this.element.css('height', 'auto');
@@ -73,6 +80,13 @@ $.widget('custom.textbox', $.custom.editbox, {
 			'destroy';
 		this.element.resizable(resizeOption);
 		return this;
+	},
+	_input() {
+		let _this = this;
+		this.element.find('.text-area').on('input',function() {
+			$('.box-height-input').val(_this.element.height());
+			_this.options.attribute.height = _this.element.height();
+		});
 	},
 	_setHeight(height) {
 		this.element.css('height', 'auto');
@@ -113,15 +127,15 @@ $.widget('custom.textbox', $.custom.editbox, {
 			//改变文字大小
 			text_size_input() {
 				let $div = $('<div class="clearfix tool-line">');
-				let $input = $('<input class="tools-input-s" type="text" />').val(_this.options.attribute.fontSize).on('input', function () {
+				let $input = $('<input class="tools-input-s" type="number" />').val(_this.options.attribute.fontSize).delayInput(function () {
 					let val = $(this).val();
-					if (isNaN(val)) return;
 					_this.element.css('min-width', val + 'px')
 					//改变文字大小
 					_this.element.find('.text-area').css('font-size', val + 'px');
 					// _this.element.css('height', _this.element.find('.text-area').height());
+					// $(this).val(_this.options.attribute.fontSize);
 					//改变box文字大小属性
-					_this.options.attribute.fontSize = parseInt(val);
+					_this.options.attribute.fontSize = parseInt(val) || _this.options.attribute.fontSize;
 					//改变缩放设置
 					_this._resizeAble(true);
 				});

@@ -10,14 +10,21 @@ $.widget('custom.imgbox', $.custom.editbox, {
 			'box_link_input',
 			'box_bg_input',
 			'box_size_btn',
+			'box_center_btn',
 			'box_index_module',
 			'box_clear_btn',
 		],
 		attribute: {
+			padding: 0,
+			width: 400,
+			height: 200,
 			backgroundSize: 'auto',
 			backgroundPositionX: 'left',
 			backgroundPositionY: 'top',
 		},
+	},
+	_methods() {
+		return this;
 	},
 	active(e) {
 		// console.log('click')
@@ -135,15 +142,15 @@ $.widget('custom.imgbox', $.custom.editbox, {
 			//图片展示方式
 			img_size_btn() {
 				return $('<div class="clearfix tool-line button-group">')
-				.append(_img_size_fn('cover'), _img_size_fn('contain'), _img_size_fn('tiling'), _img_size_fn('auto'));
+					.append(_img_size_fn('cover'), _img_size_fn('contain'), _img_size_fn('tiling'), _img_size_fn('auto'));
 			},
 			img_position_x_btn() {
 				return $('<div class="clearfix tool-line button-group tools-img-position-x-div">')
-				.append(_img_position_x_fn('left'), _img_position_x_fn('center'), _img_position_x_fn('right'));
+					.append(_img_position_x_fn('left'), _img_position_x_fn('center'), _img_position_x_fn('right'));
 			},
 			img_position_y_btn() {
 				return $('<div class="clearfix tool-line button-group tools-img-position-y-div">')
-				.append(_img_position_y_fn('top'), _img_position_y_fn('center'), _img_position_y_fn('bottom'));
+					.append(_img_position_y_fn('top'), _img_position_y_fn('center'), _img_position_y_fn('bottom'));
 			}
 		}
 	},
