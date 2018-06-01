@@ -57,12 +57,12 @@ $.widget('custom.editbox', {
 	},
 	//改变options时执行
 	_setOptions: function () {
-		console.log('seropts')
+		console.log('setopts')
 		this._superApply(arguments);
 	},
 
 	_setOption: function (key, value) {
-		console.log('seropt')
+		console.log('setopt')
 		this._super(key, value);
 	},
 
