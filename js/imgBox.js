@@ -23,6 +23,9 @@ $.widget('custom.imgbox', $.custom.editbox, {
 			backgroundPositionY: 'top',
 		},
 	},
+	// _settle(opt,ele) {
+	// 	return this._super(opt,ele);
+	// },
 	_methods() {
 		return this;
 	},
@@ -53,7 +56,7 @@ $.widget('custom.imgbox', $.custom.editbox, {
 			} else if (size === 'contain') {
 				class_name = 'fa-compress';
 				title_name = '限制';
-			} else if (size === 'tiling') {
+			} else if (size === '100% 100%') {
 				class_name = 'fa-expand-arrows-alt';
 				title_name = '平铺';
 			} else if (size === 'auto') {
@@ -65,10 +68,16 @@ $.widget('custom.imgbox', $.custom.editbox, {
 				.addClass(_this.options.attribute.backgroundSize === size ? 'active' : '')
 				.click(function () {
 					$(this).addClass('active').siblings('button').removeClass('active');
-					_this.element.find('.image-area').css({
-						'background-size': size === 'tiling' ? '100% 100%' : size,
-					});
-					_this.options.attribute.backgroundSize = size;
+				
+					// console.log(_this._settle,'...');
+
+
+					// _this.element.find('.image-area').css({
+					// 	'background-size': size === 'tiling' ? '100% 100%' : size,
+					// });
+					// console.log(_this.element.find('.image-area'),'??')
+					_this._settle({'backgroundSize':size},_this.element.find('.image-area'));
+					// _this.options.attribute.backgroundSize = size;
 				});
 		};
 		let _img_position_x_fn = direction => {
@@ -88,10 +97,13 @@ $.widget('custom.imgbox', $.custom.editbox, {
 				.addClass(_this.options.attribute.backgroundPositionX === direction ? 'active' : '')
 				.click(function () {
 					$(this).addClass('active').siblings('button').removeClass('active');
-					_this.element.find('.image-area').css({
-						'background-position-x': direction,
-					});
-					_this.options.attribute.backgroundPositionX = direction;
+					// _this.element.find('.image-area').css({
+					// 	'background-position-x': direction,
+					// });
+					_this._settle({'backgroundPositionX':direction},_this.element.find('.image-area'));
+					
+					// _this._settle.call(_this.element.find('.image-area'),{'backgroundPositionX':direction});
+					// _this.options.attribute.backgroundPositionX = direction;
 				});
 		};
 		let _img_position_y_fn = direction => {
@@ -111,10 +123,12 @@ $.widget('custom.imgbox', $.custom.editbox, {
 				.addClass(_this.options.attribute.backgroundPositionY === direction ? 'active' : '')
 				.click(function () {
 					$(this).addClass('active').siblings('button').removeClass('active');
-					_this.element.find('.image-area').css({
-						'background-position-y': direction,
-					});
-					_this.options.attribute.backgroundPositionY = direction;
+					// _this.element.find('.image-area').css({
+					// 	'background-position-y': direction,
+					// });
+					// _this.options.attribute.backgroundPositionY = direction;
+					_this._settle({'backgroundPositionY':direction},_this.element.find('.image-area'));
+					
 				});
 		};
 		return {
@@ -142,7 +156,7 @@ $.widget('custom.imgbox', $.custom.editbox, {
 			//图片展示方式
 			img_size_btn() {
 				return $('<div class="clearfix tool-line button-group">')
-					.append(_img_size_fn('cover'), _img_size_fn('contain'), _img_size_fn('tiling'), _img_size_fn('auto'));
+					.append(_img_size_fn('cover'), _img_size_fn('contain'), _img_size_fn('100% 100%'), _img_size_fn('auto'));
 			},
 			img_position_x_btn() {
 				return $('<div class="clearfix tool-line button-group tools-img-position-x-div">')

@@ -18,12 +18,21 @@ $.widget('custom.textbox', $.custom.editbox, {
 			fontSize: 20,
 			width: 300,
 			height: 20,
-			fontColor: '#444',
-			direction: 'left',
+			color: '#444',
+			textAlign: 'left',
 			minWidth : 20,
 		},
 	},
-
+	_settle(opt,ele) {
+		this._super(opt,ele);
+		// for(let i in opt){
+		// 	if(i === 'height') {
+		this.element.css('height','auto');
+		this.options.attribute.height = opt['height'];
+		// 	}
+		// }
+		return this;
+	},
 	_focusStatus(b) {
 		if (b) {
 			this.element.addClass('focus').find('.text-area').focus();
@@ -113,14 +122,20 @@ $.widget('custom.textbox', $.custom.editbox, {
 			}
 			return $('<button title="' + title_name + '"></button>')
 				.append('<i class="fas ' + class_name + '"></i>')
-				.addClass(_this.options.attribute.direction === direction ? 'active' : '')
+				.addClass(_this.options.attribute.textAlign === direction ? 'active' : '')
 				.click(function () {
 					$(this).addClass('active').siblings('button').removeClass('active');
-					_this.element.find('.text-area').css({
-						'text-align': direction,
-						'text-align-last': direction === 'justify' ? 'justify' : 'unset'
-					});
-					_this.options.attribute.direction = direction;
+
+					_this._settle({
+						'textAlign':direction,
+						'textSlignLast':direction === 'justify' ? 'justify' : 'unset'
+					},_this.element.find('.text-area'));
+
+					// _this.element.find('.text-area').css({
+					// 	'text-align': direction,
+					// 	'text-align-last': direction === 'justify' ? 'justify' : 'unset'
+					// });
+					// _this.options.attribute.direction = direction;
 				});
 		}
 		return {
@@ -128,14 +143,19 @@ $.widget('custom.textbox', $.custom.editbox, {
 			text_size_input() {
 				let $div = $('<div class="clearfix tool-line">');
 				let $input = $('<input class="tools-input-s" type="number" />').val(_this.options.attribute.fontSize).delayInput(function () {
-					let val = $(this).val();
-					_this.element.css('min-width', val + 'px')
+					let val = parseInt($(this).val());
+
+
+					_this._settle({'minWidth':val});
+					_this._settle({'fontSize':val},_this.element.find('.text-area'));
+
+					// _this.element.css('min-width', val + 'px')
 					//改变文字大小
-					_this.element.find('.text-area').css('font-size', val + 'px');
+					// _this.element.find('.text-area').css('font-size', val + 'px');
 					// _this.element.css('height', _this.element.find('.text-area').height());
 					// $(this).val(_this.options.attribute.fontSize);
 					//改变box文字大小属性
-					_this.options.attribute.fontSize = parseInt(val) || _this.options.attribute.fontSize;
+					// _this.options.attribute.fontSize = parseInt(val) || _this.options.attribute.fontSize;
 					//改变缩放设置
 					_this._resizeAble(true);
 				});
@@ -148,12 +168,13 @@ $.widget('custom.textbox', $.custom.editbox, {
 			},
 			//文本颜色
 			text_color_input() {
-				let $input = $('<input class="tools-input-m" style="width:100px;" value="' + _this.options.attribute.fontColor + '" />');
+				let $input = $('<input class="tools-input-m" style="width:100px;" value="' + _this.options.attribute.color + '" />');
 				let $div = $('<div class="clearfix tool-line">').append('<label>文本颜色</label>', $input);
 				// $div = $('<div>').append($input);
 				$input.colorpicker().change(function () {
-					_this.element.css('color', $(this).val());
-					_this.options.attribute.fontColor = $(this).val();
+					_this._settle({'color':$(this).val()});
+					// _this.element.css('color', $(this).val());
+					// _this.options.attribute.fontColor = $(this).val();
 				});
 				return $div;
 
