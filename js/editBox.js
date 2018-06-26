@@ -4,6 +4,7 @@ const GET_LOCAL_IMG = (window.navigator.userAgent.indexOf("Chrome") >= 1 || wind
 	window.URL.createObjectURL;
 
 function blurAll() {
+	$('.editbox-container').containerbox('blur');
 	$('.editbox-text').textbox('blur');
 	$('.editbox-img').imgbox('blur');
 }
@@ -31,9 +32,10 @@ $.widget('custom.editbox', {
 		internal: '',
 		//box的一些属性
 		attribute: {
-			width: null,
-			height: null,
+			width: 0,
+			height: 0,
 			backgroundColor: null,
+			left: 0,
 			zIndex: 0,
 		},
 	},
@@ -46,14 +48,16 @@ $.widget('custom.editbox', {
 	_init() {
 		// console.log('init');
 		//初始状态：beginning
+		console.log(this.options.attribute)
 		this._beginStatus()._settle({
 			'height': this.options.attribute.height,
 			'width': this.options.attribute.width,
+			'left': this.options.attribute.left,
 			'zIndex': this.options.attribute.zIndex
 		});
-			// ._setWidth(this.options.attribute.width)
-			// ._setHeight(this.options.attribute.height)
-			// ._setZIndex(this.options.attribute.zIndex)
+		// ._setWidth(this.options.attribute.width)
+		// ._setHeight(this.options.attribute.height)
+		// ._setZIndex(this.options.attribute.zIndex)
 		if (this._methods) this._methods();
 		this._on({
 			'click': 'active'
@@ -119,39 +123,20 @@ $.widget('custom.editbox', {
 		this.element.resizable(resizeOption);
 		return this;
 	},
-	_settle(opt,ele) {
+	_settle(opt, ele) {
 		// console.log(ele);
-	
+
 		// console.log(this instanceof $,'???');
-		(ele||this.element).css(
-			opt||{}
+		(ele || this.element).css(
+			opt || {}
 		)
 		// .data(this.options.attribute);
 
-		this.options.attribute = Object.assign({},this.options.attribute, opt);
-	
+		this.options.attribute = Object.assign({}, this.options.attribute, opt);
+
 		return this;
 	},
-	// _setWidth(width) {
-	// 	// let minWidth = this.options.attribute.minWidth,
-	// 	// 	width = parseInt(w);
-	// 	// width = width < minWidth ? minWidth : width;
-	// 	this.element.css('width', width);
-	// 	this.options.attribute.width = width;
-	// 	return this;
-	// },
-	// _setHeight(height) {
-	// 	// let minHeight = this.options.attribute.minWidth;
-	// 	// height = width < minHeight ? minHeight : height;
-	// 	this.element.css('height', height);
-	// 	this.options.attribute.height = height;
-	// 	return this;
-	// },
-	// _setZIndex(z_index) {
-	// 	this.element.css('z-index', z_index);
-	// 	this.options.attribute.zIndex = z_index;
-	// 	return this;
-	// },
+
 	//右侧工具
 	_pubTools() {
 		// console.log(this.options.attribute)
@@ -163,15 +148,21 @@ $.widget('custom.editbox', {
 					$minus = $('<button><i class="fas fa-minus"></i></button>').click(function () {
 						let num = parseInt($input.val()) === 0 ? 0 : parseInt($input.val()) - 1;
 						$input.val(num);
-						_this._settle({'zIndex': num});
+						_this._settle({
+							'zIndex': num
+						});
 					}),
 					$plus = $('<button><i class="fas fa-plus"></i></button>').click(function () {
 						let num = parseInt($input.val()) + 1;
 						$input.val(num);
-						_this._settle({'zIndex': num});
+						_this._settle({
+							'zIndex': num
+						});
 					}),
-					$input = $(`<input class="tools-input-s" type="number" value="${_this.options.attribute.zIndex}" />`).on('input', function () {					
-						_this._settle({'zIndex': $(this).val()});
+					$input = $(`<input class="tools-input-s" type="number" value="${_this.options.attribute.zIndex}" />`).on('input', function () {
+						_this._settle({
+							'zIndex': $(this).val()
+						});
 					});
 				$div.append($minus, $input, $plus);
 				return $div;
@@ -185,7 +176,9 @@ $.widget('custom.editbox', {
 					// _this.element.css('background-color', $(this).val() || 'transparent');
 					// _this.options.attribute.bgColor = $(this).val();
 
-					_this._settle({'backgroundColor': $(this).val() || 'transparent'});
+					_this._settle({
+						'backgroundColor': $(this).val() || 'transparent'
+					});
 					_this.options.attribute.backgroundColor = $(this).val();
 				});
 				return $div;
@@ -217,12 +210,16 @@ $.widget('custom.editbox', {
 								});
 							}
 						}
-						_this._settle({'width': $this.val()});
+						_this._settle({
+							'width': $this.val()
+						});
 						// _this._setWidth($this.val());
 					}),
 					$y_input = $(`<input class="tools-input-s box-height-input" type="number"bn ${_this.options.private_classname === 'editbox-text'?'disabled':''} value="${_this.options.attribute.height}" />`)
 					.delayInput(function () {
-						_this._settle({'height': $(this).val()});
+						_this._settle({
+							'height': $(this).val()
+						});
 						// _this._setHeight($(this).val());
 					});
 				$div.append('宽:', $x_input, '高:', $y_input);

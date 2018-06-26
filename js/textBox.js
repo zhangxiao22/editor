@@ -25,12 +25,8 @@ $.widget('custom.textbox', $.custom.editbox, {
 	},
 	_settle(opt,ele) {
 		this._super(opt,ele);
-		// for(let i in opt){
-		// 	if(i === 'height') {
 		this.element.css('height','auto');
 		this.options.attribute.height = opt['height'];
-		// 	}
-		// }
 		return this;
 	},
 	_focusStatus(b) {
@@ -46,7 +42,7 @@ $.widget('custom.textbox', $.custom.editbox, {
 		return this;
 	},
 	active(e) {
-		// console.log('click')
+		console.log('click text')
 		e.stopPropagation();
 		status = this.options.status;
 		// console.log(status);
@@ -73,18 +69,15 @@ $.widget('custom.textbox', $.custom.editbox, {
 		let resizeOption = b ? {
 				// 约束区域
 				containment: 'parent',
-				minWidth: size,
-				maxHeight: size,
-				minHeight: size,
+				minWidth: size + this.options.attribute.padding * 2,
+				// maxHeight: size,
+				// minHeight: size,
 				resize() {
 					//非常关键，防止有高度后，再输入或删除文字高度不会变
 					_this.element.css('height', 'auto');
 					_this.options.attribute.width = _this.element.width();
 					$('.box-width-input').val(_this.element.width());
 				},
-				stop() {
-					// _this.element.css('height', 'auto');
-				}
 			} :
 			'destroy';
 		this.element.resizable(resizeOption);

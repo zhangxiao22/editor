@@ -20,7 +20,7 @@
       bottom: 0;
       /* flex-basis: 80px; */
       background: #FFCC99;
-      color:#984209;
+      color: #984209;
       padding: 20px 0;
     }
 
@@ -55,16 +55,37 @@
       /* border: 2px solid transparent; */
       /* box-sizing: border-box; */
     }
-    .editbox-text {height: auto;padding: 5px;}
-    .editbox-img {height: 20%;cursor: move;}
+
+    .editbox-text {
+      height: auto;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+
+    .editbox-img {
+      height: 20%;
+      cursor: move;
+    }
+
+    .editbox-container {
+      outline: 1px solid #ddd;
+    }
 
     .custom-editbox:hover {
       outline: 2px dashed #ddd;
     }
 
+    .editbox-container:hover {
+      outline: 2px dashed #99CCFF;
+    }
+
     .custom-editbox.active {
-      outline:2px dashed #ddd;
+      outline: 2px dashed #ddd;
       /* border: 2px solid red; */
+    }
+
+    .editbox-container.active {
+      outline: 2px dashed #99CCFF;
     }
 
     .custom-editbox.focus {
@@ -82,11 +103,13 @@
       /* margin: 5px; */
       /* box-sizing: border-box; */
     }
+
     .custom-editbox.focus .text-area {
       cursor: text;
     }
+
     .custom-editbox.editbox-text .text-area:empty:before {
-      content:'文本';
+      content: '文本';
       color: #bbb;
     }
 
@@ -100,6 +123,7 @@
       background-repeat: no-repeat;
       /* background-size: cover; */
     }
+
     .custom-editbox .image-area .fa-image {
       color: #ddd;
       width: 50%;
@@ -123,6 +147,7 @@
       bottom: 0;
       background: #FFCC99;
     }
+
     button.active {
       background: red;
     }
@@ -134,6 +159,7 @@
   <div class="container">
     <aside class="component-area">
       <ul>
+        <li class="new-container">容器</li>
         <li class="new-text">文本</li>
         <li class="new-image">图片</li>
         <li class="new-video">视频</li>
@@ -146,9 +172,9 @@
       <div class="tools"></div>
       <button class="save">save</button>
       <!-- <div class="demoPanel ui-widget ui-widget-content ui-corner-all" style="width:130px"> -->
-        
-        <!-- <input id="cpBoth" value="#b7dde8" /> -->
-        
+
+      <!-- <input id="cpBoth" value="#b7dde8" /> -->
+
       <!-- </div> -->
     </aside>
   </div>
@@ -160,11 +186,15 @@
 
   <script src="js/common.js"></script>
   <script src="js/editBox.js"></script>
+  <script src="js/containerBox.js"></script>
   <script src="js/textBox.js"></script>
   <script src="js/imgBox.js"></script>
   <script>
     $(function () {
-
+      $('.new-container').click(function (e) {
+        e.stopPropagation();
+        $('<div>').appendTo('.canvas').containerbox();
+      });
       $('.new-text').click(function (e) {
         e.stopPropagation();
         $('<div>').appendTo('.canvas').textbox();
@@ -182,7 +212,7 @@
       });
 
       $('.save').click(function () {
-        
+
         $('.editbox-text').textbox('blur');
         $('.editbox-img').imgbox('blur');
 
@@ -205,7 +235,7 @@
         });
         // }
         console.log($('.canvas').html());
-        localStorage.setItem("tempHtml",$('.canvas').html());
+        localStorage.setItem("tempHtml", $('.canvas').html());
         window.open('view.html');
       });
     });
